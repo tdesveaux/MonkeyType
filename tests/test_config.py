@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 import _frozen_importlib
+import inspect
 import sysconfig
 
 import pytest
@@ -15,8 +16,12 @@ class TestDefaultCodeFilter:
     def test_excludes_stdlib(self):
         assert not config.default_code_filter(sysconfig.get_path.__code__)
 
-    def test_excludes_site_packages(self):
-        assert not config.default_code_filter(pytest.skip.__code__)
+    def test_excludes_site_packages(self) -> None:
+        if inspect.isfunction(pytest.skip):
+            code = pytest.skip.__code__
+        else:
+            code = pytest.skip.__call__.__code__
+        assert not config.default_code_filter(code)
 
     def test_includes_otherwise(self):
         assert config.default_code_filter(
