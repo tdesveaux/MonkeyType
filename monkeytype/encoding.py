@@ -7,7 +7,7 @@ import json
 import logging
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, TypeVar
 
-from mypy_extensions import TypedDict
+from typing_extensions import TypedDict
 
 from monkeytype.compat import is_any, is_generic, is_union, qualname_of_generic
 from monkeytype.db.base import CallTraceThunk
@@ -93,9 +93,12 @@ _HIDDEN_BUILTIN_TYPES: Dict[str, type] = {
 
 
 def typed_dict_from_dict(d: TypeDict) -> type:
-    return TypedDict(
-        d["qualname"], {k: type_from_dict(v) for k, v in d["elem_types"].items()}
+    # Assign to temp var to circumvent mypy bug
+    new_type = TypedDict(  # type: ignore[misc]
+        d["qualname"],
+        {k: type_from_dict(v) for k, v in d["elem_types"].items()},
     )
+    return new_type
 
 
 def type_from_dict(d: TypeDict) -> type:

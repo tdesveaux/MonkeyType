@@ -5,7 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 from typing import Any, ForwardRef, Union, _GenericAlias  # type: ignore[attr-defined]
 
-from mypy_extensions import _TypedDictMeta  # type: ignore[attr-defined]
+from typing_extensions import is_typeddict
+from typing_extensions import _TypedDictMeta  # type: ignore[attr-defined]
 
 try:
     from django.utils.functional import cached_property as cp
@@ -17,8 +18,7 @@ except ImportError:
 
 
 def is_typed_dict(typ: type) -> bool:
-    """Test indirectly using _TypedDictMeta because TypedDict does not support `isinstance`."""
-    return isinstance(typ, _TypedDictMeta)
+    return is_typeddict(typ)
 
 
 def is_any(typ: Any) -> bool:

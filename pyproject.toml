@@ -26,6 +26,7 @@ classifiers = [
 
 dependencies = [
     "libcst>=0.4.4",
+    "typing-extensions>=4.15.0",
 ]
 
 dynamic = ["readme"]
