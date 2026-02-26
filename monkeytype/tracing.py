@@ -184,8 +184,13 @@ def get_func(frame: FrameType) -> Optional[Callable[..., Any]]:
     return func
 
 
-RETURN_VALUE_OPCODE = opcode.opmap["RETURN_VALUE"]
-YIELD_VALUE_OPCODE = opcode.opmap["YIELD_VALUE"]
+RETURN_OPCODES = {opcode.opmap["RETURN_VALUE"]}
+if _RETURN_CONST_OPCODE := opcode.opmap.get("RETURN_CONST"):
+    RETURN_OPCODES.add(_RETURN_CONST_OPCODE)
+
+YIELD_OPCODES = {opcode.opmap["YIELD_VALUE"]}
+if _RESUME_OPCODE := opcode.opmap.get("RESUME"):
+    YIELD_OPCODES.add(_RESUME_OPCODE)
 
 # A CodeFilter is a predicate that decides whether or not a the call for the
 # supplied code object should be traced.
@@ -263,10 +268,10 @@ class CallTracer:
         trace = self.traces.get(frame)
         if trace is None:
             return
-        elif last_opcode == YIELD_VALUE_OPCODE:
+        elif last_opcode in YIELD_OPCODES:
             trace.add_yield_type(typ)
         else:
-            if last_opcode == RETURN_VALUE_OPCODE:
+            if last_opcode in RETURN_OPCODES:
                 trace.return_type = typ
             del self.traces[frame]
             self.logger.log(trace)
