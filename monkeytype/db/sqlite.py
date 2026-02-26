@@ -87,7 +87,7 @@ class SQLiteStore(CallTraceStore):
         for row in serialize_traces(traces):
             values.append(
                 (
-                    datetime.datetime.now(),
+                    datetime.datetime.now().strftime("YYYY-MM-DD HH:MM:SS.SSS"),
                     row.module,
                     row.qualname,
                     row.arg_types,
