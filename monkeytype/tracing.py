@@ -120,12 +120,21 @@ def get_func_in_mro(obj: Any, code: CodeType) -> Optional[Callable[..., Any]]:
 def _has_code(
     func: Optional[Callable[..., Any]], code: CodeType
 ) -> Optional[Callable[..., Any]]:
-    while func is not None:
-        func_code = getattr(func, "__code__", None)
-        if func_code is code:
+    if func is None:
+        return None
+
+    def _match(func_: Callable[..., Any]) -> bool:
+        return getattr(func_, "__code__", None) is code
+
+    if _match(func):
+        return func
+
+    try:
+        func = inspect.unwrap(func, stop=_match)
+        if callable(func) and _match(func):
             return func
-        # Attempt to find the decorated function
-        func = getattr(func, "__wrapped__", None)
+    except ValueError:
+        pass
     return None
 
 
