@@ -3,7 +3,6 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-import asyncio
 import collections
 import enum
 import inspect
@@ -739,7 +738,7 @@ class FunctionDefinition:
     ) -> "FunctionDefinition":
         kind = FunctionKind.from_callable(func)
         sig = inspect.Signature.from_callable(func)
-        is_async = asyncio.iscoroutinefunction(func)
+        is_async = inspect.iscoroutinefunction(func)
         return FunctionDefinition(
             func.__module__, func.__qualname__, kind, sig, is_async
         )
