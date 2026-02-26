@@ -4,10 +4,18 @@
 Sample code for MonkeyType demonstration exercise at PyCon 2018.
 
 """
+
 from datetime import datetime
 import enum
 from typing import (
-    Collection, Dict, Generic, List, NamedTuple, NewType, Optional, TypeVar
+    Collection,
+    Dict,
+    Generic,
+    List,
+    NamedTuple,
+    NewType,
+    Optional,
+    TypeVar,
 )
 
 
@@ -17,7 +25,6 @@ InboxEventId = NewType("InboxEventId", int)
 
 
 class FeedEntry:
-
     def __init__(
         self, id: FeedEntryId, user_id: UserId, caption: str, published: datetime
     ) -> None:
@@ -28,7 +35,6 @@ class FeedEntry:
 
 
 class User:
-
     def __init__(self, id: UserId, name: str, following: List[UserId]) -> None:
         self.id = id
         self.name = name
@@ -99,7 +105,6 @@ class FollowedEvent(InboxEvent):
 
 
 class RepoInterface:
-
     def get_feed_entries_by_ids(
         self, ids: Collection[FeedEntryId]
     ) -> Dict[FeedEntryId, Optional[FeedEntry]]:
