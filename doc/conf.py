@@ -62,10 +62,11 @@ author = 'Matt Page & Carl Meyer'
 # built documents.
 #
 
-with open(os.path.join(os.path.dirname(os.path.abspath('.')), 'setup.cfg')) as f:
+with open(os.path.join(os.path.dirname(os.path.abspath(".")), "pyproject.toml")) as f:
     for line in f:
-        if line.startswith('version ='):
-            version_from_code = line.split('=')[1].strip()
+        if line.startswith("version ="):
+            version_from_code = line.split("=")[1].strip()
+            break
 
 # The short X.Y version.
 version = '.'.join(version_from_code.split('.')[:3])

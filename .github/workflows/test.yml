@@ -9,56 +9,38 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      WORKON_HOME: "~/.venvs"
     strategy:
         fail-fast: false
         matrix:
-            python-version: ["3.9", "3.10", "3.11"]
+            python-version:
+              - "3.9"
+              - "3.10"
+              - "3.11"
+              - "3.12"
+              - "3.13"
+
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - uses: "actions/checkout@v6"
+    - uses: astral-sh/setup-uv@v7
       with:
-        python-version: ${{ matrix.python-version }}
+        enable-cache: true
 
-    - name: Restore pip cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('**/Pipfile.lock') }}
-
-    - name: Restore pipenv cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pipenv
-        key: ${{ runner.os }}-${{ matrix.python-version }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
-    - name: Install dependencies
-      run: |
-        pip install pipenv
-        pipenv install -d
+    - run: uv sync --locked --all-extras --dev
 
     - name: Lint with ruff
-      run: |
-        pipenv run ruff check monkeytype
+      run: uv run ruff check
 
-    - name: Format with ruff and black
-      run: |
-        pipenv run ruff format --check --diff monkeytype
-
-    - name: Format with isort
-      run: |
-        pipenv run isort --check --diff monkeytype
+    - name: Format with ruff
+      run: uv run ruff format --check --diff
 
     - name: Typecheck
-      run: |
-        pipenv run mypy monkeytype
+      run: uv run mypy
 
     - name: Run tests
-      run: |
-        pipenv run pytest
+      run: uv run pytest
 
     - name: Upload htmldoc
       uses: actions/upload-artifact@v4
@@ -69,7 +51,7 @@ jobs:
     - name: Build docs
       run: |
         cd doc
-        pipenv run make html
+        uv run make html
 
     - name: Upload doc
       uses: actions/upload-artifact@v4
